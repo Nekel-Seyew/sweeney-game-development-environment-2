@@ -4,7 +4,7 @@
  */
 package Utilities;
 
-import java.awt.image.BufferedImage;
+import com.jogamp.opengl.util.texture.Texture;
 import java.util.Hashtable;
 
 /**
@@ -12,5 +12,6 @@ import java.util.Hashtable;
  * @author kdsweenx
  */
 public class Image2D {
-    private static Hashtable<String, BufferedImage> cache;
+    private static Hashtable<String, Texture> cache;
+    Rect drawable;
 }
