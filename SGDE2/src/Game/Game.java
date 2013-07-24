@@ -45,11 +45,13 @@ public abstract class Game implements GLEventListener{
     /**
      * This will set up the game window, do not make game objects here.
      */
-    public abstract void Initialize();
+    public void PreGameSetup(){
+        
+    }
     /**
      * This will set up the actual game logic. Set up game objects here(like sprites, etc.)
      */
-    public abstract void Load();
+    public abstract void InitializeAndLoad();
     public abstract void Update();
     public abstract void Draw(ImageCollection batch);
     public abstract void UnloadContent();
@@ -68,8 +70,8 @@ public abstract class Game implements GLEventListener{
         GameBase.canvas.addMouseListener(input);
         GameBase.canvas.addMouseMotionListener(input);
         GameBase.canvas.addMouseWheelListener(input);
-        GLVersion=Game.GL;
-        Initialize();
+        GLVersion=Game.GL2;
+        PreGameSetup();
     }
     
     @Override
@@ -78,7 +80,11 @@ public abstract class Game implements GLEventListener{
         glu=new GLU();
         gl.glViewport((int)viewscreen.GetX(), (int)viewscreen.GetY(), 
                 (int)viewscreen.getWidth(), (int)viewscreen.getHeight());
-        Load();
+        
+        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+        
+        InitializeAndLoad();
     }
     
     @Override
@@ -158,7 +164,7 @@ public abstract class Game implements GLEventListener{
     
     public static GL getGL(GLAutoDrawable drawable){
         switch(GLVersion){
-            case GL:
+            case GL1:
                 return drawable.getGL();
             case GL2:
                 return drawable.getGL().getGL2();
@@ -177,9 +183,24 @@ public abstract class Game implements GLEventListener{
         return this.gl;
     }
     
-    public final static int GL  =1;
+    /**
+     * Default OpenGL
+     */
+    public final static int GL1  =1;
+    /**
+     * OpenGL 3
+     */
     public final static int GL2 =2;
+    /**
+     * OpenGL 3.1
+     */
     public final static int GL3 =3;
+    /**
+     * OpenGL 4
+     */
     public final static int GL4 =4;
+    /**
+     * OpenGL 2+3
+     */
     public final static int GL3p=5;
 }
