@@ -8,15 +8,20 @@ import Utilities.ImageCollection;
 import Utilities.InputAdvance;
 import Utilities.KeyBoard;
 import Utilities.Mouse;
+import Utilities.Vector2;
 import Utilities.ViewScreen;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
+import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 
 
@@ -24,14 +29,27 @@ import javax.swing.JFrame;
  *
  * @author kdsweenx
  */
-public abstract class Game {
+public abstract class Game implements GLEventListener{
     public KeyBoard keyboard;
     public Mouse mouse;
     public ImageCollection batch;
     public ViewScreen viewscreen;
     private Input input;
+    public int FPS=60;
+    public static int GLVersion;
     
-    public abstract void InitializeAndLoad();
+    private Color background;
+    private GL gl;
+    private GLU glu;
+    
+    /**
+     * This will set up the game window, do not make game objects here.
+     */
+    public abstract void Initialize();
+    /**
+     * This will set up the actual game logic. Set up game objects here(like sprites, etc.)
+     */
+    public abstract void Load();
     public abstract void Update();
     public abstract void Draw(ImageCollection batch);
     public abstract void UnloadContent();
@@ -40,11 +58,48 @@ public abstract class Game {
         input=new Input();
         keyboard=new KeyBoard();
         mouse=Mouse.getCurrentInstance();
-        //viewscreen=new ViewScreen();
+        viewscreen=new ViewScreen(new Vector2(800,600));
         //batch=new ImageCollection(viewscreen);
-        InitializeAndLoad();
+        GameBase.frame.addKeyListener(input);
+        GameBase.frame.addMouseListener(input);
+        GameBase.frame.addMouseMotionListener(input);
+        GameBase.frame.addMouseWheelListener(input);
+        GameBase.canvas.addKeyListener(input);
+        GameBase.canvas.addMouseListener(input);
+        GameBase.canvas.addMouseMotionListener(input);
+        GameBase.canvas.addMouseWheelListener(input);
+        GLVersion=Game.GL;
+        Initialize();
     }
     
+    @Override
+    public void init(GLAutoDrawable drawable){
+        gl=this.getGL(drawable);
+        glu=new GLU();
+        gl.glViewport((int)viewscreen.GetX(), (int)viewscreen.GetY(), 
+                (int)viewscreen.getWidth(), (int)viewscreen.getHeight());
+        Load();
+    }
+    
+    @Override
+    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height){
+        viewscreen.set(new Vector2(x,y));
+        viewscreen.setHeight(height);
+        viewscreen.setWidth(width);
+        gl=this.getGL(drawable);
+        gl.glViewport((int)viewscreen.GetX(), (int)viewscreen.GetY(), (int)viewscreen.getWidth(), (int)viewscreen.getHeight());
+    }
+    
+    @Override
+    public void display(GLAutoDrawable drawable){
+        gl=this.getGL(drawable);
+        gl.glClearColor(background.getRed(), background.getBlue(), background.getGreen(), background.getAlpha());
+    }
+    
+    @Override
+    public void dispose(GLAutoDrawable drawable){
+        UnloadContent();
+    }
     
     protected class Input extends InputAdvance{
 
@@ -100,4 +155,31 @@ public abstract class Game {
         }
     
     }
+    
+    public static GL getGL(GLAutoDrawable drawable){
+        switch(GLVersion){
+            case GL:
+                return drawable.getGL();
+            case GL2:
+                return drawable.getGL().getGL2();
+            case GL3:
+                return drawable.getGL().getGL3();
+            case GL4:
+                return drawable.getGL().getGL4();
+            case GL3p:
+                return drawable.getGL().getGL3bc();
+            default:
+                return drawable.getGL().getRootGL();
+        }
+    }
+    
+    public GL getInstGL(){
+        return this.gl;
+    }
+    
+    public final static int GL  =1;
+    public final static int GL2 =2;
+    public final static int GL3 =3;
+    public final static int GL4 =4;
+    public final static int GL3p=5;
 }

@@ -38,7 +38,7 @@ public class ViewScreen implements Serializable{
     public static final Vector2 DEFAULT=new Vector2(0,0);
 
     /**
-     * Creates a View Screen with an upper corner of 0,0
+     * Creates a View Screen with an upper corner of 0,0 and default width and height of 800 x 600
      */
     public ViewScreen(){
         position=new Vector2(0,0);
