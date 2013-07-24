@@ -15,6 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
@@ -37,6 +38,8 @@ public abstract class Game implements GLEventListener{
     private Input input;
     public int FPS=60;
     public static int GLVersion;
+    public int WIDTH;
+    public int HEIGHT;
     
     private Color background;
     private GL gl;
@@ -56,12 +59,7 @@ public abstract class Game implements GLEventListener{
     public abstract void Draw(ImageCollection batch);
     public abstract void UnloadContent();
     
-    public Game(){
-        input=new Input();
-        keyboard=new KeyBoard();
-        mouse=Mouse.getCurrentInstance();
-        viewscreen=new ViewScreen(new Vector2(800,600));
-        //batch=new ImageCollection(viewscreen);
+    private void addInput(){
         GameBase.frame.addKeyListener(input);
         GameBase.frame.addMouseListener(input);
         GameBase.frame.addMouseMotionListener(input);
@@ -70,7 +68,18 @@ public abstract class Game implements GLEventListener{
         GameBase.canvas.addMouseListener(input);
         GameBase.canvas.addMouseMotionListener(input);
         GameBase.canvas.addMouseWheelListener(input);
-        GLVersion=Game.GL2;
+    }
+    
+    public Game(){
+        input=new Input();
+        keyboard=new KeyBoard();
+        mouse=Mouse.getCurrentInstance();
+        WIDTH=800;
+        HEIGHT=600;
+        viewscreen=new ViewScreen(new Vector2(WIDTH,HEIGHT));
+        batch=new ImageCollection(viewscreen);
+        GLVersion=Game.GLTwo;
+        background=Color.black;
         PreGameSetup();
     }
     
@@ -83,13 +92,19 @@ public abstract class Game implements GLEventListener{
         
         gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
         gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-        
+        ((GL2)gl).glMatrixMode(GL2.GL_PROJECTION);
+        ((GL2)gl).glShadeModel(GL2.GL_SMOOTH);
+        ((GL2)gl).glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        //final game setup
+        addInput();
         InitializeAndLoad();
     }
     
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height){
         viewscreen.set(new Vector2(x,y));
+        WIDTH=width;
+        HEIGHT=height;
         viewscreen.setHeight(height);
         viewscreen.setWidth(width);
         gl=this.getGL(drawable);
@@ -100,6 +115,13 @@ public abstract class Game implements GLEventListener{
     public void display(GLAutoDrawable drawable){
         gl=this.getGL(drawable);
         gl.glClearColor(background.getRed(), background.getBlue(), background.getGreen(), background.getAlpha());
+        
+        //update
+        Update();
+        //Draw
+        Draw(batch);
+        //render
+        batch.Render(drawable);
     }
     
     @Override
@@ -164,15 +186,15 @@ public abstract class Game implements GLEventListener{
     
     public static GL getGL(GLAutoDrawable drawable){
         switch(GLVersion){
-            case GL1:
+            case GLOne:
                 return drawable.getGL();
-            case GL2:
+            case GLTwo:
                 return drawable.getGL().getGL2();
-            case GL3:
+            case GLThree:
                 return drawable.getGL().getGL3();
-            case GL4:
+            case GLFour:
                 return drawable.getGL().getGL4();
-            case GL3p:
+            case GLThreePlus:
                 return drawable.getGL().getGL3bc();
             default:
                 return drawable.getGL().getRootGL();
@@ -186,21 +208,21 @@ public abstract class Game implements GLEventListener{
     /**
      * Default OpenGL
      */
-    public final static int GL1  =1;
+    public final static int GLOne  =1;
     /**
      * OpenGL 3
      */
-    public final static int GL2 =2;
+    public final static int GLTwo =2;
     /**
      * OpenGL 3.1
      */
-    public final static int GL3 =3;
+    public final static int GLThree =3;
     /**
      * OpenGL 4
      */
-    public final static int GL4 =4;
+    public final static int GLFour =4;
     /**
      * OpenGL 2+3
      */
-    public final static int GL3p=5;
+    public final static int GLThreePlus=5;
 }

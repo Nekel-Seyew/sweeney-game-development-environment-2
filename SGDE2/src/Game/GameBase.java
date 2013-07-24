@@ -22,18 +22,21 @@ public class GameBase {
     public static FPSAnimator animator;
     
     public GameBase(Game game, String name){
-        game=game;
+        this.game=game;
         frame= new JFrame(name);
         canvas= new GLCanvas();
-        canvas.setPreferredSize(new Dimension((int)game.viewscreen.getWidth(), (int)game.viewscreen.getHeight()));
+        canvas.setPreferredSize(new Dimension(game.WIDTH, game.HEIGHT));
+        frame.setPreferredSize(new Dimension(game.WIDTH, game.HEIGHT));
         canvas.addGLEventListener(game);
         animator= new FPSAnimator(canvas, game.FPS);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(canvas);
+        frame.getContentPane().add(canvas);
+        frame.pack();
 
     }
     
     public void run(){
+        frame.setVisible(true);
         animator.start();
     }
 }
