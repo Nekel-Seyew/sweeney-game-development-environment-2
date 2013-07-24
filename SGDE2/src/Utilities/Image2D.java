@@ -83,11 +83,13 @@ public class Image2D {
         this.depth=i;
     }
     
-    private void calcRect(){
-        Vector2 ur=null;
+    public void calcRect(){
         try {
-            ur = new Vector2(pos.getX() - (dim.getX() / 2), pos.getY() - (dim.getY() / 2));
-            this.myRect = new Rect((int) ur.getX(), (int) ur.getY(), (int) (dim.getX() * scalex), (int) (dim.getY() * scaley), angle);
+            this.myRect = new Rect((int) (pos.getX() - (dim.getX() / 2)), 
+                    (int) ( pos.getY() - (dim.getY() / 2)), 
+                    (int) (dim.getX() * scalex), 
+                    (int) (dim.getY() * scaley), 
+                    angle);
         } catch (Exception e) {
             e.printStackTrace();
         }
