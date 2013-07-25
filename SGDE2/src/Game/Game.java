@@ -122,11 +122,17 @@ public abstract class Game implements GLEventListener{
         Draw(batch);
         //render
         batch.Render(drawable);
+        
+        gl.glFlush();
     }
     
     @Override
     public void dispose(GLAutoDrawable drawable){
         UnloadContent();
+    }
+    
+    public void run(){
+        //GameBase.canvas.getBufferStrategy()
     }
     
     protected class Input extends InputAdvance{

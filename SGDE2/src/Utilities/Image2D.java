@@ -12,7 +12,9 @@ import com.jogamp.opengl.util.texture.TextureCoords;
 import com.jogamp.opengl.util.texture.TextureIO;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
@@ -23,7 +25,8 @@ import javax.media.opengl.GL2GL3;
  */
 public class Image2D {
     private static Hashtable<String, Texture> cache=new Hashtable<String, Texture>();
-    Rect drawable;
+    private static Hashtable<String, BufferedImage> cache2=new Hashtable<String, BufferedImage>();
+    Rect drawable;//0,0 to 1,1
     Texture img;
     String s;
     TextureCoords subimg;
@@ -42,13 +45,17 @@ public class Image2D {
         if(cache.containsKey(s)){
             img=cache.get(s);
             subimg=img.getImageTexCoords();
+            BufferedImage bi=cache2.get(s);
+            dim=new Vector2(bi.getWidth(),bi.getHeight());
+            drawable=new Rect(0,0,(int)subimg.right(),(int)subimg.bottom());
         }else{
             try{
-                String suff=s.substring(s.indexOf("."));
+                BufferedImage bi = ImageIO.read(new File(s));
                 img=TextureIO.newTexture(new File(s), false);
                 subimg=img.getImageTexCoords();
-                dim=new Vector2(Math.abs(subimg.left()-subimg.right()),Math.abs(subimg.top()-subimg.bottom()));
+                dim=new Vector2(bi.getWidth(),bi.getHeight());
                 cache.put(s, img);
+                cache2.put(s, bi);
                 drawable=new Rect(0,0,(int)subimg.right(),(int)subimg.bottom());
             }catch(Exception e){
                 e.printStackTrace();
@@ -96,32 +103,48 @@ public class Image2D {
     }
     
     public Rect getRectangle(){
-        calcRect();
+        this.calcRect();
         return myRect;
     }
     
     
     public void Render(GL2 gl){
+        gl.glPushMatrix();
         img.enable(gl);
         img.bind(gl);
         
         //Vector2 ur=new Vector2(pos.getX()-(dim.getX()/2),pos.getY()-(dim.getY()/2));
         Rect imgR=myRect;
+//        
+//        gl.glBegin(GL2.GL_QUADS);
+//        //upper-left
+//        gl.glTexCoord2f(drawable.x,drawable.y);
+//        gl.glVertex2f((float)imgR.UpperLeftCorner.getX(), (float)imgR.UpperLeftCorner.getY());
+//        //upper-right
+//        gl.glTexCoord2f(drawable.x+drawable.width, drawable.y);
+//        gl.glVertex2f((float)imgR.UpperRightCorner.getX(), (float)imgR.UpperRightCorner.getY());
+//        //bottom-right
+//        gl.glTexCoord2f(drawable.x+drawable.width, drawable.y+drawable.height);
+//        gl.glVertex2f((float)imgR.LowerRightCorner.getX(), (float)imgR.LowerRightCorner.getY());
+//        //bottom-left
+//        gl.glTexCoord2f(drawable.x,drawable.y+drawable.height);
+//        gl.glVertex2f((float)imgR.LowerLeftCorner.getX(), (float)imgR.LowerLeftCorner.getY());
         
+        gl.glTranslatef((float)imgR.UpperLeftCorner.getX(),(float)imgR.UpperLeftCorner.getY(), 0);
         gl.glBegin(GL2.GL_QUADS);
-        //upper-left
-        gl.glTexCoord2f(drawable.x,drawable.y);
-        gl.glVertex2f((float)imgR.UpperLeftCorner.getX(), (float)imgR.UpperLeftCorner.getY());
-        //upper-right
-        gl.glTexCoord2f(drawable.x+drawable.width, drawable.y);
-        gl.glVertex2f((float)imgR.UpperRightCorner.getX(), (float)imgR.UpperRightCorner.getY());
-        //bottom-right
-        gl.glTexCoord2f(drawable.x+drawable.width, drawable.y+drawable.height);
-        gl.glVertex2f((float)imgR.LowerRightCorner.getX(), (float)imgR.LowerRightCorner.getY());
-        //bottom-left
-        gl.glTexCoord2f(drawable.x,drawable.y+drawable.height);
-        gl.glVertex2f((float)imgR.LowerLeftCorner.getX(), (float)imgR.LowerLeftCorner.getY());
+        {
+            gl.glTexCoord2f(0, 0);
+            gl.glVertex2f(0,0);
+            gl.glTexCoord2f(0,this.img.getHeight());
+            gl.glVertex2f(0,(float)this.dim.getY());
+            gl.glTexCoord2f(this.img.getWidth(), this.img.getHeight());
+            gl.glVertex2f((float)this.dim.getX(), (float)this.dim.getY());
+            gl.glTexCoord2f(this.img.getWidth(), 0);
+            gl.glVertex2f((float)this.dim.getX(),0);
+        }
+        
         gl.glEnd();
+        gl.glPopMatrix();
         
     }
     

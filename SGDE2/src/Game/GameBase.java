@@ -28,7 +28,7 @@ public class GameBase {
         canvas.setPreferredSize(new Dimension(game.WIDTH, game.HEIGHT));
         frame.setPreferredSize(new Dimension(game.WIDTH, game.HEIGHT));
         canvas.addGLEventListener(game);
-        animator= new FPSAnimator(canvas, game.FPS);
+        animator= new FPSAnimator(canvas, game.FPS, true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(canvas);
         frame.pack();
