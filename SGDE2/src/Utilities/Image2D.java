@@ -107,7 +107,7 @@ public class Image2D {
         return myRect;
     }
     
-    
+    //Possible help: http://www.cokeandcode.com/info/tut2d-3.html
     public void Render(GL2 gl){
         gl.glPushMatrix();
         img.enable(gl);
