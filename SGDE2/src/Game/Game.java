@@ -4,6 +4,7 @@
  */
 package Game;
 
+import Utilities.Image2D;
 import Utilities.ImageCollection;
 import Utilities.InputAdvance;
 import Utilities.KeyBoard;
@@ -97,6 +98,7 @@ public abstract class Game implements GLEventListener{
         ((GL2)gl).glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
         //final game setup
         addInput();
+        Image2D.giveGL(gl);
         InitializeAndLoad();
     }
     
