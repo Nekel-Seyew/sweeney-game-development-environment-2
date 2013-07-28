@@ -28,7 +28,8 @@ public class Test extends Game{
 
     @Override
     public void Draw(ImageCollection batch) {
-        batch.Draw(new Image2D("images/nehe.png"), new Vector2(100,100));
+        batch.Draw(new Image2D("Sprites/Wyvern.jpg"), new Vector2(-100,0));
+//        batch.Draw(new Image2D("images/nehe.png"), new Vector2(-100,-100));
     }
 
     @Override

@@ -98,7 +98,7 @@ public abstract class Game implements GLEventListener{
         ((GL2)gl).glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
         //final game setup
         addInput();
-        Image2D.giveGL(gl);
+        Image2D.init(gl);
         InitializeAndLoad();
     }
     

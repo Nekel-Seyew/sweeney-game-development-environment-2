@@ -176,7 +176,7 @@ public class ImageCollection {
                 //image.Draw(g, context);
             if(r.intersects(image.getRectangle())){
                 image.Render(gl);
-                System.out.println(image);
+                //System.out.println(image);
             }
         }
        
