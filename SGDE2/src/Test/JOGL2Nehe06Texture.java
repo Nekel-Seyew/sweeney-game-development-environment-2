@@ -151,7 +151,7 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
    }
    
    private float convertX(double x){
-       return (float)(((-1/(CANVAS_WIDTH/2f))*x)+1);
+       return (float)(((1/(CANVAS_WIDTH/2f))*x)-1);
    }
    private float convertY(double y){
        return (float)(((-1/(CANVAS_HEIGHT/2f))*y)+1);

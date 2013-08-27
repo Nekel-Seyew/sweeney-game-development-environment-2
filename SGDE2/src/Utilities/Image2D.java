@@ -82,7 +82,7 @@ public class Image2D{
         float modY = (texture.getImageHeight() / (float) v.getHeight());
         texture.enable(gl);
         texture.bind(gl);
-        float X = (float) (((-1 / (v.getWidth() / 2f)) * x) + 1);
+        float X = (float) (((1 / (v.getWidth() / 2f)) * x) - 1);
         float Y = (float) (((-1 / (v.getHeight() / 2f)) * y) + 1);
         gl.glTranslatef(X, Y, 0);
 //        gl.glColor3f(1, 1, 1);
@@ -100,6 +100,7 @@ public class Image2D{
         }
         gl.glEnd();
         gl.glPopMatrix();
+        texture.disable(gll);
 
     }
 
