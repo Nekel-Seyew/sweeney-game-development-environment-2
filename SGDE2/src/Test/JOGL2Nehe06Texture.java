@@ -1,4 +1,5 @@
 package Test;
+import Utilities.Vector2;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -92,6 +93,7 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
    private String textureFileType = ".png";
    private float mini=0;
    private Texture tex2;
+   private Vector2 pos=new Vector2(400,300);
 
    // Texture image flips vertically. Shall use TextureCoords class to retrieve the
    // top, bottom, left and right coordinates.
@@ -147,6 +149,13 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
          e.printStackTrace();
       }
    }
+   
+   private float convertX(double x){
+       return (float)(((-1/(CANVAS_WIDTH/2f))*x)+1);
+   }
+   private float convertY(double y){
+       return (float)(((-1/(CANVAS_HEIGHT/2f))*y)+1);
+   }
 
    /**
     * Call-back handler for window re-size event. Also called when the drawable is 
@@ -182,20 +191,24 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
       
       tex2.enable(gl);
+      gl.glPushMatrix();
       tex2.bind(gl);
       gl.glLoadIdentity();
-      gl.glScalef(1.0f, 1.0f, 0.0f);
-      gl.glTranslatef(-mini, 0, 0); // translate into the screen
+//      gl.glScalef(1.0f, 1.0f, 0.0f);
+      gl.glTranslatef(convertX(pos.getX()), convertY(pos.getY()), 0); // translate into the screen
+      float modX=(tex2.getImageWidth()/(float)CANVAS_WIDTH);
+      float modY=(tex2.getImageHeight()/(float)CANVAS_HEIGHT);
       gl.glBegin(GL_QUADS);
       gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().bottom());
-      gl.glVertex2f(0,0);
+      gl.glVertex2f(-modX,-modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().bottom());
-      gl.glVertex2f(tex2.getImageWidth()/(float)CANVAS_WIDTH,0);
+      gl.glVertex2f(modX,-modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().top());
-      gl.glVertex2f(tex2.getImageWidth()/(float)CANVAS_WIDTH,tex2.getImageHeight()/(float)CANVAS_HEIGHT);
+      gl.glVertex2f(modX,modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().top());
-      gl.glVertex2f(0,tex2.getImageHeight()/(float)CANVAS_HEIGHT);
+      gl.glVertex2f(-modX,modY);
       gl.glEnd();
+      gl.glPopMatrix();
       
 
 //      // ------ Render a Cube with texture ------
@@ -284,7 +297,7 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       angleX += rotateSpeedX;
       angleY += rotateSpeedY;
       angleZ += rotateSpeedZ;
-      mini+=0.01;
+      pos.dX(5);
    }
 
    /** 

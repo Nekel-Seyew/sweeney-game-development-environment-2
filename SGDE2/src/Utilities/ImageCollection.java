@@ -138,7 +138,7 @@ public class ImageCollection {
         Node hold=bufferStart.getNext();
         while(hold != null){
             Rect r= new Rect(-50,-50,(int)view.getWidth()+50,(int)view.getHeight()+50);
-            hold.draw(drawable.getGL().getGL2(), r);
+            hold.draw(drawable.getGL().getGL2(), r,view);
             hold=hold.getNext();
         }
     }
@@ -171,11 +171,11 @@ public class ImageCollection {
             next=n;
         }
        
-        public void draw(GL2 gl, Rect r){
+        public void draw(GL2 gl, Rect r, ViewScreen v){
             //if(image instanceof Command){
                 //image.Draw(g, context);
             if(r.intersects(image.getRectangle())){
-                image.Render(gl);
+                image.Render(gl,v);
                 //System.out.println(image);
             }
         }

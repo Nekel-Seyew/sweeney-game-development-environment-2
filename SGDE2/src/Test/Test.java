@@ -21,7 +21,7 @@ public class Test extends Game{
 
     @Override
     public void InitializeAndLoad() {
-        pos=new Vector2();
+        pos=new Vector2(400,300);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class Test extends Game{
 
     @Override
     public void Draw(ImageCollection batch) {
-        batch.Draw(new Image2D("Sprites/Wyvern2.jpg"), pos);
-//        batch.Draw(new Image2D("images/nehe.png"), new Vector2(-100,-100));
+        batch.Draw(new Image2D("Sprites/Wyvern.jpg"), pos);
+        batch.Draw(new Image2D("images/nehe.png"), new Vector2(-100,-100));
     }
 
     @Override

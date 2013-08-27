@@ -46,7 +46,7 @@ public class ViewScreen implements Serializable{
     }
    
     public ViewScreen(Vector2 dimensions){
-        position=new Vector2();
+        position=new Vector2(0,0);
         this.dimensions=dimensions;
        
     }
