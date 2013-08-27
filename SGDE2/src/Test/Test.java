@@ -8,6 +8,7 @@ import Game.Game;
 import Game.GameBase;
 import Utilities.Image2D;
 import Utilities.ImageCollection;
+import Utilities.KeyBoard;
 import Utilities.Vector2;
 
 /**
@@ -15,20 +16,33 @@ import Utilities.Vector2;
  * @author kdsweenx
  */
 public class Test extends Game{
+    
+    Vector2 pos;
 
     @Override
     public void InitializeAndLoad() {
-        
+        pos=new Vector2();
     }
 
     @Override
     public void Update() {
-        
+        if(keyboard.isKeyDown(KeyBoard.w)){
+            pos.dY(5);
+        }
+        if(keyboard.isKeyDown(KeyBoard.a)){
+            pos.dX(-5);
+        }
+        if(keyboard.isKeyDown(KeyBoard.s)){
+            pos.dY(-5);
+        }
+        if(keyboard.isKeyDown(KeyBoard.d)){
+            pos.dX(5);
+        }
     }
 
     @Override
     public void Draw(ImageCollection batch) {
-        batch.Draw(new Image2D("Sprites/Wyvern.jpg"), new Vector2(-100,0));
+        batch.Draw(new Image2D("Sprites/Wyvern2.jpg"), pos);
 //        batch.Draw(new Image2D("images/nehe.png"), new Vector2(-100,-100));
     }
 

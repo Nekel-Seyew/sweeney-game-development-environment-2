@@ -23,6 +23,8 @@ import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
+import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 
@@ -110,7 +112,15 @@ public abstract class Game implements GLEventListener{
         viewscreen.setHeight(height);
         viewscreen.setWidth(width);
         gl=this.getGL(drawable);
+        float aspect = (float)width / height;
         gl.glViewport((int)viewscreen.GetX(), (int)viewscreen.GetY(), (int)viewscreen.getWidth(), (int)viewscreen.getHeight());
+        ((GL2)gl).glMatrixMode(GL_PROJECTION);  // choose projection matrix
+        ((GL2)gl).glLoadIdentity();             // reset projection matrix
+        glu.gluPerspective(45.0, aspect, 0.1, 0.1); // fovy, aspect, zNear, zFar
+
+        // Enable the model-view transform
+        ((GL2)gl).glMatrixMode(GL_MODELVIEW);
+        ((GL2)gl).glLoadIdentity(); // reset
     }
     
     @Override

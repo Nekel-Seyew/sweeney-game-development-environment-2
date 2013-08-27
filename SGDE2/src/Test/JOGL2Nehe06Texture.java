@@ -10,12 +10,16 @@ import javax.media.opengl.GLException;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureCoords;
 import com.jogamp.opengl.util.texture.TextureIO;
 import java.io.File;
 import static javax.media.opengl.GL.*;  // GL constants
 import static javax.media.opengl.GL2.*; // GL2 constants
+
+//LOOK TO:
+//http://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
 
 /**
  * NeHe Lesson #6 (JOGL 2 Port): Texture
@@ -26,8 +30,10 @@ import static javax.media.opengl.GL2.*; // GL2 constants
 public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
    // Define constants for the top-level container
    private static String TITLE = "NeHe Lesson #6: Texture";
-   private static final int CANVAS_WIDTH = 320;  // width of the drawable
-   private static final int CANVAS_HEIGHT = 240; // height of the drawable
+//   private static final int CANVAS_WIDTH = 320;  // width of the drawable
+//   private static final int CANVAS_HEIGHT = 240; // height of the drawable
+    private static final int CANVAS_WIDTH = 800;  // width of the drawable
+   private static final int CANVAS_HEIGHT = 600; // height of the drawable
    private static final int FPS = 60; // animator's target frames per second
    
    /** The entry main() method to setup the top-level container and animator */
@@ -84,6 +90,8 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
    private Texture texture;
    private String textureFileName = "images/nehe.png";
    private String textureFileType = ".png";
+   private float mini=0;
+   private Texture tex2;
 
    // Texture image flips vertically. Shall use TextureCoords class to retrieve the
    // top, bottom, left and right coordinates.
@@ -116,6 +124,7 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
          // Create a OpenGL Texture object from (URL, mipmap, file suffix)
          // Use URL so that can read from JAR and disk file.
           texture= TextureIO.newTexture(new File(textureFileName), false);
+          tex2= TextureIO.newTexture(new File("Sprites/Wyvern.jpg"),false);
 //         texture = TextureIO.newTexture(
 //               getClass().getClassLoader().getResource(textureFileName), // relative to project root 
 //               false, textureFileType);
@@ -156,7 +165,8 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       // Setup perspective projection, with aspect ratio matches viewport
       gl.glMatrixMode(GL_PROJECTION);  // choose projection matrix
       gl.glLoadIdentity();             // reset projection matrix
-      glu.gluPerspective(45.0, aspect, 0.1, 100.0); // fovy, aspect, zNear, zFar
+//      glu.gluPerspective(45.0, aspect, 0.1, 100.0); // fovy, aspect, zNear, zFar
+      glu.gluPerspective(45, aspect, 0, 0);
 
       // Enable the model-view transform
       gl.glMatrixMode(GL_MODELVIEW);
@@ -170,83 +180,100 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
    public void display(GLAutoDrawable drawable) {
       GL2 gl = drawable.getGL().getGL2();  // get the OpenGL 2 graphics context
       gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
-
-      // ------ Render a Cube with texture ------
-      gl.glLoadIdentity();  // reset the model-view matrix
-      gl.glTranslatef(0.0f, 0.0f, -5.0f); // translate into the screen
-      gl.glRotatef(angleX, 1.0f, 0.0f, 0.0f); // rotate about the x-axis
-      gl.glRotatef(angleY, 0.0f, 1.0f, 0.0f); // rotate about the y-axis
-      gl.glRotatef(angleZ, 0.0f, 0.0f, 1.0f); // rotate about the z-axis
-
-      // Enables this texture's target in the current GL context's state.
-      texture.enable(gl);  // same as gl.glEnable(texture.getTarget());
-      // gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
-      // Binds this texture to the current GL context.
-      texture.bind(gl);  // same as gl.glBindTexture(texture.getTarget(), texture.getTextureObject());
- 
+      
+      tex2.enable(gl);
+      tex2.bind(gl);
+      gl.glLoadIdentity();
+      gl.glScalef(1.0f, 1.0f, 0.0f);
+      gl.glTranslatef(-mini, 0, 0); // translate into the screen
       gl.glBegin(GL_QUADS);
-
-      // Front Face
-      gl.glTexCoord2f(textureLeft, textureBottom);
-      gl.glVertex3f(-1.0f, -1.0f, 1.0f); // bottom-left of the texture and quad
-      gl.glTexCoord2f(textureRight, textureBottom);
-      gl.glVertex3f(1.0f, -1.0f, 1.0f);  // bottom-right of the texture and quad
-      gl.glTexCoord2f(textureRight, textureTop);
-      gl.glVertex3f(1.0f, 1.0f, 1.0f);   // top-right of the texture and quad
-      gl.glTexCoord2f(textureLeft, textureTop);
-      gl.glVertex3f(-1.0f, 1.0f, 1.0f);  // top-left of the texture and quad
-
-      // Back Face
-      gl.glTexCoord2f(textureRight, textureBottom);
-      gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-      gl.glTexCoord2f(textureRight, textureTop);
-      gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-      gl.glTexCoord2f(textureLeft, textureTop);
-      gl.glVertex3f(1.0f, 1.0f, -1.0f);
-      gl.glTexCoord2f(textureLeft, textureBottom);
-      gl.glVertex3f(1.0f, -1.0f, -1.0f);
-      
-      // Top Face
-      gl.glTexCoord2f(textureLeft, textureTop);
-      gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-      gl.glTexCoord2f(textureLeft, textureBottom);
-      gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-      gl.glTexCoord2f(textureRight, textureBottom);
-      gl.glVertex3f(1.0f, 1.0f, 1.0f);
-      gl.glTexCoord2f(textureRight, textureTop);
-      gl.glVertex3f(1.0f, 1.0f, -1.0f);
-      
-      // Bottom Face
-      gl.glTexCoord2f(textureRight, textureTop);
-      gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-      gl.glTexCoord2f(textureLeft, textureTop);
-      gl.glVertex3f(1.0f, -1.0f, -1.0f);
-      gl.glTexCoord2f(textureLeft, textureBottom);
-      gl.glVertex3f(1.0f, -1.0f, 1.0f);
-      gl.glTexCoord2f(textureRight, textureBottom);
-      gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-      
-      // Right face
-      gl.glTexCoord2f(textureRight, textureBottom);
-      gl.glVertex3f(1.0f, -1.0f, -1.0f);
-      gl.glTexCoord2f(textureRight, textureTop);
-      gl.glVertex3f(1.0f, 1.0f, -1.0f);
-      gl.glTexCoord2f(textureLeft, textureTop);
-      gl.glVertex3f(1.0f, 1.0f, 1.0f);
-      gl.glTexCoord2f(textureLeft, textureBottom);
-      gl.glVertex3f(1.0f, -1.0f, 1.0f);
-      
-      // Left Face
-      gl.glTexCoord2f(textureLeft, textureBottom);
-      gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-      gl.glTexCoord2f(textureRight, textureBottom);
-      gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-      gl.glTexCoord2f(textureRight, textureTop);
-      gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-      gl.glTexCoord2f(textureLeft, textureTop);
-      gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-
+      gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().bottom());
+      gl.glVertex2f(0,0);
+      gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().bottom());
+      gl.glVertex2f(tex2.getImageWidth()/(float)CANVAS_WIDTH,0);
+      gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().top());
+      gl.glVertex2f(tex2.getImageWidth()/(float)CANVAS_WIDTH,tex2.getImageHeight()/(float)CANVAS_HEIGHT);
+      gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().top());
+      gl.glVertex2f(0,tex2.getImageHeight()/(float)CANVAS_HEIGHT);
       gl.glEnd();
+      
+
+//      // ------ Render a Cube with texture ------
+//      //gl.glLoadIdentity();  // reset the model-view matrix
+//      gl.glTranslatef(0.0f, 0.0f, -5.0f); // translate into the screen
+//      gl.glRotatef(angleX, 1.0f, 0.0f, 0.0f); // rotate about the x-axis
+//      gl.glRotatef(angleY, 0.0f, 1.0f, 0.0f); // rotate about the y-axis
+//      gl.glRotatef(angleZ, 0.0f, 0.0f, 1.0f); // rotate about the z-axis
+//
+//      // Enables this texture's target in the current GL context's state.
+//      texture.enable(gl);  // same as gl.glEnable(texture.getTarget());
+//      // gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+//      // Binds this texture to the current GL context.
+//      texture.bind(gl);  // same as gl.glBindTexture(texture.getTarget(), texture.getTextureObject());
+// 
+//      gl.glBegin(GL_QUADS);
+//
+//      // Front Face
+//      gl.glTexCoord2f(textureLeft, textureBottom);
+//      gl.glVertex3f(-1.0f, -1.0f, 1.0f); // bottom-left of the texture and quad
+//      gl.glTexCoord2f(textureRight, textureBottom);
+//      gl.glVertex3f(1.0f, -1.0f, 1.0f);  // bottom-right of the texture and quad
+//      gl.glTexCoord2f(textureRight, textureTop);
+//      gl.glVertex3f(1.0f, 1.0f, 1.0f);   // top-right of the texture and quad
+//      gl.glTexCoord2f(textureLeft, textureTop);
+//      gl.glVertex3f(-1.0f, 1.0f, 1.0f);  // top-left of the texture and quad
+//
+//      // Back Face
+//      gl.glTexCoord2f(textureRight, textureBottom);
+//      gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+//      gl.glTexCoord2f(textureRight, textureTop);
+//      gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+//      gl.glTexCoord2f(textureLeft, textureTop);
+//      gl.glVertex3f(1.0f, 1.0f, -1.0f);
+//      gl.glTexCoord2f(textureLeft, textureBottom);
+//      gl.glVertex3f(1.0f, -1.0f, -1.0f);
+//      
+//      // Top Face
+//      gl.glTexCoord2f(textureLeft, textureTop);
+//      gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+//      gl.glTexCoord2f(textureLeft, textureBottom);
+//      gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+//      gl.glTexCoord2f(textureRight, textureBottom);
+//      gl.glVertex3f(1.0f, 1.0f, 1.0f);
+//      gl.glTexCoord2f(textureRight, textureTop);
+//      gl.glVertex3f(1.0f, 1.0f, -1.0f);
+//      
+//      // Bottom Face
+//      gl.glTexCoord2f(textureRight, textureTop);
+//      gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+//      gl.glTexCoord2f(textureLeft, textureTop);
+//      gl.glVertex3f(1.0f, -1.0f, -1.0f);
+//      gl.glTexCoord2f(textureLeft, textureBottom);
+//      gl.glVertex3f(1.0f, -1.0f, 1.0f);
+//      gl.glTexCoord2f(textureRight, textureBottom);
+//      gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+//      
+//      // Right face
+//      gl.glTexCoord2f(textureRight, textureBottom);
+//      gl.glVertex3f(1.0f, -1.0f, -1.0f);
+//      gl.glTexCoord2f(textureRight, textureTop);
+//      gl.glVertex3f(1.0f, 1.0f, -1.0f);
+//      gl.glTexCoord2f(textureLeft, textureTop);
+//      gl.glVertex3f(1.0f, 1.0f, 1.0f);
+//      gl.glTexCoord2f(textureLeft, textureBottom);
+//      gl.glVertex3f(1.0f, -1.0f, 1.0f);
+//      
+//      // Left Face
+//      gl.glTexCoord2f(textureLeft, textureBottom);
+//      gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+//      gl.glTexCoord2f(textureRight, textureBottom);
+//      gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+//      gl.glTexCoord2f(textureRight, textureTop);
+//      gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+//      gl.glTexCoord2f(textureLeft, textureTop);
+//      gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+//
+//      gl.glEnd();
 
       // Disables this texture's target (e.g., GL_TEXTURE_2D) in the current GL
       // context's state.
@@ -257,6 +284,7 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       angleX += rotateSpeedX;
       angleY += rotateSpeedY;
       angleZ += rotateSpeedZ;
+      mini+=0.01;
    }
 
    /** 

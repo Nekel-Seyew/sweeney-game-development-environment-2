@@ -47,7 +47,7 @@ public class Image2D2 {
     
     public void Render(GL gl){
         TextureRenderer renderer=TextureRenderer.createAlphaOnlyRenderer(texture.getWidth(), texture.getHeight(), true);
-         
+        
     }
     
 }
