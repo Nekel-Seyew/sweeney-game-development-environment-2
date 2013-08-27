@@ -16,6 +16,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import javax.media.opengl.GL;
+import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
+import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
+import static javax.media.opengl.GL.GL_DEPTH_TEST;
+import static javax.media.opengl.GL.GL_LEQUAL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -92,7 +96,9 @@ public abstract class Game implements GLEventListener{
         glu=new GLU();
         gl.glViewport((int)viewscreen.GetX(), (int)viewscreen.GetY(), 
                 (int)viewscreen.getWidth(), (int)viewscreen.getHeight());
-        
+        gl.glClearDepth(1.0f); 
+        gl.glEnable(GL_DEPTH_TEST); // enables depth testing
+        gl.glDepthFunc(GL_LEQUAL);
         gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
         gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
         ((GL2)gl).glMatrixMode(GL2.GL_PROJECTION);
@@ -125,8 +131,8 @@ public abstract class Game implements GLEventListener{
     @Override
     public void display(GLAutoDrawable drawable){
         gl=this.getGL(drawable);
-        gl.glClearColor(background.getRed(), background.getBlue(), background.getGreen(), background.getAlpha());
-        
+        gl.glClearColor(background.getRed()/255, background.getBlue()/255, background.getGreen()/255, background.getAlpha()/255);
+//        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //update
         Update();
         //Draw
@@ -134,7 +140,7 @@ public abstract class Game implements GLEventListener{
         //render
         batch.Render(drawable);
         
-        gl.glFlush();
+//        gl.glFlush();
     }
     
     @Override

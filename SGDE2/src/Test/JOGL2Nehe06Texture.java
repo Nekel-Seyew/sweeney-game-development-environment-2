@@ -194,7 +194,7 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       gl.glPushMatrix();
       tex2.bind(gl);
       gl.glLoadIdentity();
-//      gl.glScalef(1.0f, 1.0f, 0.0f);
+//      gl.glScalef(3.0f, 3.0f, 0.0f);
       gl.glTranslatef(convertX(pos.getX()), convertY(pos.getY()), 0); // translate into the screen
       float modX=(tex2.getImageWidth()/(float)CANVAS_WIDTH);
       float modY=(tex2.getImageHeight()/(float)CANVAS_HEIGHT);
@@ -297,7 +297,7 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       angleX += rotateSpeedX;
       angleY += rotateSpeedY;
       angleZ += rotateSpeedZ;
-      pos.dX(5);
+//      pos.dX(5);
    }
 
    /** 
