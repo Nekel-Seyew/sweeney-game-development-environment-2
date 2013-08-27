@@ -18,6 +18,7 @@ import com.jogamp.opengl.util.texture.TextureIO;
 import java.io.File;
 import static javax.media.opengl.GL.*;  // GL constants
 import static javax.media.opengl.GL2.*; // GL2 constants
+import static javax.media.opengl.GL2GL3.GL_QUADS;
 
 //LOOK TO:
 //http://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html
@@ -190,6 +191,9 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       GL2 gl = drawable.getGL().getGL2();  // get the OpenGL 2 graphics context
       gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
       
+      //interesting stuff about tinting here.
+      http://www.java-gaming.org/index.php/topic,2649.0
+      
       tex2.enable(gl);
       gl.glPushMatrix();
       tex2.bind(gl);
@@ -198,6 +202,26 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       gl.glTranslatef(convertX(pos.getX()), convertY(pos.getY()), 0); // translate into the screen
       float modX=(tex2.getImageWidth()/(float)CANVAS_WIDTH);
       float modY=(tex2.getImageHeight()/(float)CANVAS_HEIGHT);
+      gl.glBegin(GL_QUADS);
+      gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().bottom());
+      gl.glVertex2f(-modX,-modY);
+      gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().bottom());
+      gl.glVertex2f(modX,-modY);
+      gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().top());
+      gl.glVertex2f(modX,modY);
+      gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().top());
+      gl.glVertex2f(-modX,modY);
+      gl.glEnd();
+      gl.glPopMatrix();
+      
+      tex2.enable(gl);
+      gl.glPushMatrix();
+      tex2.bind(gl);
+      gl.glLoadIdentity();
+//      gl.glScalef(3.0f, 3.0f, 0.0f);
+      gl.glTranslatef(convertX(100), convertY(500), 0); // translate into the screen
+      modX=(tex2.getImageWidth()/(float)CANVAS_WIDTH);
+      modY=(tex2.getImageHeight()/(float)CANVAS_HEIGHT);
       gl.glBegin(GL_QUADS);
       gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().bottom());
       gl.glVertex2f(-modX,-modY);
