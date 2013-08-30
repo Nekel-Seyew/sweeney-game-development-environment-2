@@ -204,15 +204,20 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       float modY=(tex2.getImageHeight()/(float)CANVAS_HEIGHT);
       gl.glBegin(GL_QUADS);
       gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().bottom());
+      gl.glColor4f(0f, 0f, 1, 0.1f);
       gl.glVertex2f(-modX,-modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().bottom());
+      gl.glColor4f(0f, 0f, 1, 0.1f);
       gl.glVertex2f(modX,-modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().top());
+      gl.glColor4f(0f, 0f, 1, 0.1f);
       gl.glVertex2f(modX,modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().top());
+      gl.glColor4f(0f, 0f, 1, 0.1f);
       gl.glVertex2f(-modX,modY);
       gl.glEnd();
       gl.glPopMatrix();
+      gl.glColor4f(1,1,1,1f);
       
       tex2.enable(gl);
       gl.glPushMatrix();
