@@ -192,28 +192,29 @@ public class JOGL2Nehe06Texture extends GLCanvas implements GLEventListener {
       gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
       
       //interesting stuff about tinting here.
-      http://www.java-gaming.org/index.php/topic,2649.0
+      //http://www.java-gaming.org/index.php/topic,2649.0
       
+      Color c2=new Color(128,255,36);
       tex2.enable(gl);
       gl.glPushMatrix();
       tex2.bind(gl);
       gl.glLoadIdentity();
-//      gl.glScalef(3.0f, 3.0f, 0.0f);
+      gl.glScalef(3.0f, 3.0f, 0.0f);
       gl.glTranslatef(convertX(pos.getX()), convertY(pos.getY()), 0); // translate into the screen
       float modX=(tex2.getImageWidth()/(float)CANVAS_WIDTH);
       float modY=(tex2.getImageHeight()/(float)CANVAS_HEIGHT);
       gl.glBegin(GL_QUADS);
       gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().bottom());
-      gl.glColor4f(0f, 0f, 1, 0.1f);
+      gl.glColor3f(c2.getRed()/255f, c2.getGreen()/255f, c2.getBlue()/255f);
       gl.glVertex2f(-modX,-modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().bottom());
-      gl.glColor4f(0f, 0f, 1, 0.1f);
+      gl.glColor3f(c2.getRed()/255f, c2.getGreen()/255f, c2.getBlue()/255f);
       gl.glVertex2f(modX,-modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().right(), tex2.getImageTexCoords().top());
-      gl.glColor4f(0f, 0f, 1, 0.1f);
+      gl.glColor3f(c2.getRed()/255f, c2.getGreen()/255f, c2.getBlue()/255f);
       gl.glVertex2f(modX,modY);
       gl.glTexCoord2f(tex2.getImageTexCoords().left(), tex2.getImageTexCoords().top());
-      gl.glColor4f(0f, 0f, 1, 0.1f);
+      gl.glColor3f(c2.getRed()/255f, c2.getGreen()/255f, c2.getBlue()/255f);
       gl.glVertex2f(-modX,modY);
       gl.glEnd();
       gl.glPopMatrix();
