@@ -20,13 +20,16 @@ import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
 import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static javax.media.opengl.GL.GL_DEPTH_TEST;
 import static javax.media.opengl.GL.GL_LEQUAL;
+import static javax.media.opengl.GL.GL_NICEST;
 import javax.media.opengl.GL2;
+import static javax.media.opengl.GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import javax.media.opengl.glu.GLU;
@@ -44,7 +47,6 @@ public abstract class Game implements GLEventListener{
     public ViewScreen viewscreen;
     private Input input;
     public int FPS=60;
-    public static int GLVersion;
     public int WIDTH;
     public int HEIGHT;
     
@@ -53,12 +55,6 @@ public abstract class Game implements GLEventListener{
     private GLU glu;
     
     /**
-     * This will set up the game window, do not make game objects here.
-     */
-    public void PreGameSetup(){
-        
-    }
-    /**
      * This will set up the actual game logic. Set up game objects here(like sprites, etc.)
      */
     public abstract void InitializeAndLoad();
@@ -66,7 +62,7 @@ public abstract class Game implements GLEventListener{
     public abstract void Draw(ImageCollection batch);
     public abstract void UnloadContent();
     
-    private void addInput(){
+    public void addInput(){
         GameBase.frame.addKeyListener(input);
         GameBase.frame.addMouseListener(input);
         GameBase.frame.addMouseMotionListener(input);
@@ -85,73 +81,63 @@ public abstract class Game implements GLEventListener{
         HEIGHT=600;
         viewscreen=new ViewScreen(new Vector2(WIDTH,HEIGHT));
         batch=new ImageCollection(viewscreen);
-        GLVersion=Game.GLTwo;
         background=Color.black;
-        PreGameSetup();
-    }
-    
-    @Override
-    public void init(GLAutoDrawable drawable){
-        gl=this.getGL(drawable);
-        glu=new GLU();
-        gl.glViewport((int)viewscreen.GetX(), (int)viewscreen.GetY(), 
-                (int)viewscreen.getWidth(), (int)viewscreen.getHeight());
-        gl.glClearDepth(1.0f); 
-        gl.glEnable(GL_DEPTH_TEST); // enables depth testing
-        gl.glDepthFunc(GL_LEQUAL);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-        ((GL2)gl).glMatrixMode(GL2.GL_PROJECTION);
-        ((GL2)gl).glShadeModel(GL2.GL_SMOOTH);
-        ((GL2)gl).glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-        //final game setup
-        addInput();
         InitializeAndLoad();
     }
-    
+
     @Override
-    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height){
-        viewscreen.set(new Vector2(x,y));
-        WIDTH=width;
-        HEIGHT=height;
-        viewscreen.setHeight(height);
-        viewscreen.setWidth(width);
-        gl=this.getGL(drawable);
-        float aspect = (float)width / height;
-        gl.glViewport((int)viewscreen.GetX(), (int)viewscreen.GetY(), (int)viewscreen.getWidth(), (int)viewscreen.getHeight());
-        ((GL2)gl).glMatrixMode(GL_PROJECTION);  // choose projection matrix
-        ((GL2)gl).glLoadIdentity();             // reset projection matrix
-        glu.gluPerspective(45.0, aspect, 0.1, 0.1); // fovy, aspect, zNear, zFar
+    public void init(GLAutoDrawable drawable) {
+        GL2 gl = drawable.getGL().getGL2();      // get the OpenGL graphics context
+        glu = new GLU();                         // get GL Utilities
+        gl.glClearColor(background.getRed()/255f, background.getGreen()/255f, background.getBlue()/255f, 0.0f); // set background (clear) color
+        gl.glClearDepth(1.0f);      // set clear depth value to farthest
+        gl.glEnable(GL_DEPTH_TEST); // enables depth testing
+        gl.glDepthFunc(GL_LEQUAL);  // the type of depth test to do
+        gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // best perspective correction
+        gl.glShadeModel(GL_SMOOTH); // blends colors nicely, and smoothes out lighting
+    }
+
+    @Override
+    public void dispose(GLAutoDrawable drawable) {
+        this.UnloadContent();
+    }
+
+    @Override
+    public void display(GLAutoDrawable drawable) {
+        GL2 gl = drawable.getGL().getGL2();  // get the OpenGL 2 graphics context
+//        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
+        
+        this.Update();
+        this.Draw(batch);
+        batch.Render(drawable);
+    }
+
+    @Override
+    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+        GL2 gl = drawable.getGL().getGL2();  // get the OpenGL 2 graphics context
+
+        if (height == 0) {
+            height = 1;   // prevent divide by zero
+        }
+        float aspect = (float) width / height;
+        this.HEIGHT=height;
+        this.WIDTH=width;
+        this.viewscreen.setHeight(height);
+        this.viewscreen.setWidth(width);
+        // Set the view port (display area) to cover the entire window
+        gl.glViewport(viewscreen.GetX(), viewscreen.GetY(), width, height);
+
+        // Setup perspective projection, with aspect ratio matches viewport
+        gl.glMatrixMode(GL_PROJECTION);  // choose projection matrix
+        gl.glLoadIdentity();             // reset projection matrix
+//      glu.gluPerspective(45.0, aspect, 0.1, 100.0); // fovy, aspect, zNear, zFar
+        glu.gluPerspective(45, aspect, 0, 0);
 
         // Enable the model-view transform
-        ((GL2)gl).glMatrixMode(GL_MODELVIEW);
-        ((GL2)gl).glLoadIdentity(); // reset
+        gl.glMatrixMode(GL_MODELVIEW);
+        gl.glLoadIdentity(); // reset
     }
-    
-    @Override
-    public void display(GLAutoDrawable drawable){
-        gl=this.getGL(drawable);
-        gl.glClearColor(background.getRed()/255, background.getBlue()/255, background.getGreen()/255, background.getAlpha()/255);
-//        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //update
-        Update();
-        //Draw
-        Draw(batch);
-        //render
-        batch.Render(drawable);
-        
-//        gl.glFlush();
-    }
-    
-    @Override
-    public void dispose(GLAutoDrawable drawable){
-        UnloadContent();
-    }
-    
-    public void run(){
-        //GameBase.canvas.getBufferStrategy()
-    }
-    
+
     protected class Input extends InputAdvance{
 
         @Override
@@ -207,45 +193,7 @@ public abstract class Game implements GLEventListener{
     
     }
     
-    public static GL getGL(GLAutoDrawable drawable){
-        switch(GLVersion){
-            case GLOne:
-                return drawable.getGL();
-            case GLTwo:
-                return drawable.getGL().getGL2();
-            case GLThree:
-                return drawable.getGL().getGL3();
-            case GLFour:
-                return drawable.getGL().getGL4();
-            case GLThreePlus:
-                return drawable.getGL().getGL3bc();
-            default:
-                return drawable.getGL().getRootGL();
-        }
-    }
-    
     public GL getInstGL(){
         return this.gl;
     }
-    
-    /**
-     * Default OpenGL
-     */
-    public final static int GLOne  =1;
-    /**
-     * OpenGL 3
-     */
-    public final static int GLTwo =2;
-    /**
-     * OpenGL 3.1
-     */
-    public final static int GLThree =3;
-    /**
-     * OpenGL 4
-     */
-    public final static int GLFour =4;
-    /**
-     * OpenGL 2+3
-     */
-    public final static int GLThreePlus=5;
 }

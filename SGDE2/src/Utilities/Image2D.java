@@ -81,6 +81,7 @@ public class Image2D{
         float modX = (texture.getImageWidth() / (float) v.getWidth());
         float modY = (texture.getImageHeight() / (float) v.getHeight());
         texture.enable(gl);
+        gl.glPushMatrix();
         texture.bind(gl);
         float X = (float) (((1 / (v.getWidth() / 2f)) * x) - 1);
         float Y = (float) (((-1 / (v.getHeight() / 2f)) * y) + 1);
@@ -100,7 +101,6 @@ public class Image2D{
         }
         gl.glEnd();
         gl.glPopMatrix();
-        texture.disable(gll);
 
     }
 

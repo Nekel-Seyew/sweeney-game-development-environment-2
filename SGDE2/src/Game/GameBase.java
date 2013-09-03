@@ -31,6 +31,7 @@ public class GameBase {
         animator= new FPSAnimator(canvas, game.FPS, true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(canvas);
+        game.addInput();
         frame.pack();
 
     }
