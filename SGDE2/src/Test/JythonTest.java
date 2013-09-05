@@ -4,6 +4,7 @@
  */
 package Test;
 
+import org.python.core.PyCode;
 import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
@@ -16,11 +17,17 @@ public class JythonTest {
     private PyObject jyEmployeeClass;
     public JythonTest(){
         PythonInterpreter interpreter = new PythonInterpreter();
-        System.out.println("Interpreter");
-        interpreter.exec("from Test import Employee");
-        System.out.println("Interpreter.get");
+        interpreter.exec("import sys");
+        interpreter.exec("print sys.path");
+//        System.out.println("Interpreter");
+        interpreter.exec("import Test");
+        interpreter.exec("print type(Test)");
+        interpreter.exec("from Test import EmployeeTest");
+//        System.out.println("Interpreter.get");
         jyEmployeeClass = interpreter.get("Employee");
-        System.out.println("Gotten");
+//        System.out.println("Gotten");
+//        interpreter.execfile("src/Test/EmployeeTest.py");
+//        jyEmployeeClass = interpreter.get("Employee");
     }
     
     public JythonEmployeeType create(String first, String last, String id){
