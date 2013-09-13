@@ -12,4 +12,5 @@ public interface JythonEmployeeType {
     public String getEmployeeFirst();
     public String getEmployeeLast();
     public String getEmployeeId();
+    public String getAddress();
 }

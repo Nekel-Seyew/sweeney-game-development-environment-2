@@ -17,17 +17,18 @@ public class JythonTest {
     private PyObject jyEmployeeClass;
     public JythonTest(){
         PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.exec("import sys");
-        interpreter.exec("print sys.path");
-//        System.out.println("Interpreter");
-        interpreter.exec("import Test");
-        interpreter.exec("print type(Test)");
-        interpreter.exec("from Test import EmployeeTest");
-//        System.out.println("Interpreter.get");
-        jyEmployeeClass = interpreter.get("Employee");
-//        System.out.println("Gotten");
-//        interpreter.execfile("src/Test/EmployeeTest.py");
+//        interpreter.exec("import sys");
+//        interpreter.exec("print sys.path");
+////        System.out.println("Interpreter");
+//        interpreter.exec("import Test");
+//        interpreter.exec("print type(Test)");
+//        interpreter.exec("from Test import EmployeeTest");
+////        System.out.println("Interpreter.get");
 //        jyEmployeeClass = interpreter.get("Employee");
+////        System.out.println("Gotten");
+        interpreter.execfile("src/Test/AnotherTest.py");
+        interpreter.execfile("src/Test/EmployeeTest.py");
+        jyEmployeeClass = interpreter.get("Employee");
     }
     
     public JythonEmployeeType create(String first, String last, String id){
@@ -40,5 +41,6 @@ public class JythonTest {
         System.out.println(test.getEmployeeFirst());
         System.out.println(test.getEmployeeLast());
         System.out.println(test.getEmployeeId());
+        System.out.println(test.getAddress());
     }
 }
